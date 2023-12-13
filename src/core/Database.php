@@ -38,4 +38,11 @@ class Database {
             die("Connection failed: " . $e->getMessage());  
         }
     }
+
+    public function qry($query, $params = array()) {
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute($params);
+        
+        return $stmt;
+    }
 }
