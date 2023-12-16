@@ -14,7 +14,6 @@ class BaseController extends Filter
         if (count($data)) {
             extract($data);
         }
-
         // Membutuhkan file view yang sesuai
         require_once '../src/views/' . $view . '.php';
     }

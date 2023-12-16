@@ -1,6 +1,7 @@
 <?php
 
-use App\Config\Config;  
+use App\Config\Config;
+use App\Core\Routes;  
 
 if(!session_id()){
     session_start();
@@ -9,3 +10,5 @@ if(!session_id()){
 require_once '../vendor/autoload.php';
 
 Config::load();
+$routes = new Routes();
+$routes->run();

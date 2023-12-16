@@ -6,7 +6,7 @@ class App {
     // Properti default untuk controller, method, namespace, dan parameter
   private $controllerFile = 'DefaultApp';
   private $contollerMethod = 'index';
-  private $namespace = 'MyApp\Controllers';
+  private $namespace = 'App\Controllers';
   private $parametr = [];
 
   // Konstanta untuk metode HTTP yang umum
