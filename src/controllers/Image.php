@@ -355,7 +355,9 @@ public function update($id = null)
         }
 
         $caption = isset($_POST["caption"]) ? $_POST["caption"] : $existingData["caption"];
-        $file = isset($_FILES['image']) ? $_FILES['image'] : [];
+        $file = isset($_FILES["image"]) ? $_FILES["image"] : "alamak kosong";
+
+        // var_dump($file);
 
         if (isset($file['error']) && isset($file['type']) && $file['error'] == UPLOAD_ERR_OK) {
             $allowedFormats = ['image/jpg', 'image/jpeg', 'image/png'];
