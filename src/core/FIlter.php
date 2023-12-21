@@ -15,6 +15,8 @@ class Filter
     $sanitization = [];
     $validation = [];
 
+    $data = is_array($data) ? $data : [];
+
     // Iterasi melalui aturan-aturan untuk setiap field
     foreach ($fields as $field => $rules) {
       // Memeriksa apakah aturan sanitasi dan validasi dipisahkan oleh karakter '|'

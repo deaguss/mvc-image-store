@@ -336,12 +336,119 @@ class Image extends BaseController {
     }
 }
 
+public function update($id = null)
+{
+    if ($this->getToken()) {
+        $existingData = $this->imageModel->getById($id);
+
+        if (!$existingData) {
+            $data = [
+                'status' => '404',
+                'error' => '404',
+                'message' => 'Data not found for the given ID',
+                'data' => null,
+            ];
+            $this->view('header');
+            header('HTTP/1.0 404 Not Found');
+            echo json_encode($data);
+            return;
+        }
+
+        $caption = isset($_POST["caption"]) ? $_POST["caption"] : $existingData["caption"];
+        $file = isset($_FILES['image']) ? $_FILES['image'] : [];
+
+        if (isset($file['error']) && isset($file['type']) && $file['error'] == UPLOAD_ERR_OK) {
+            $allowedFormats = ['image/jpg', 'image/jpeg', 'image/png'];
+            $maxSize = 5 * 1024 * 1024;
+
+            $fileInfo = pathinfo($file['name']);
+            $ext = strtolower($fileInfo['extension']);
+
+            if (in_array($file['type'], $allowedFormats) && $file['size'] <= $maxSize) {
+                $encryptedFileName = md5(uniqid()) . '.' . $ext;
+
+                try {
+                    $s3 = AwsConfig::get();
+                    $result = $s3->putObject([
+                        'Bucket' => getenv('AWS_BUCKET_NAME'),
+                        'Key' => $encryptedFileName,
+                        'SourceFile' => $file['tmp_name'],
+                        'ACL' => 'public-read',
+                    ]);
+
+                    $imageUrl = $result['ObjectURL'];
+
+                    $inputs = [
+                        'image_url' => $imageUrl,
+                        'caption' => $caption,
+                        'image' => $encryptedFileName,
+                        'id' => $id
+                    ];
+
+                    $proc = $this->imageModel->update($inputs);
+
+                    if ($proc->rowCount() > 0) {
+                        $data = [
+                            'status' => '201',
+                            'error' => null,
+                            'message' => 'Success updated data ' . $proc->rowCount() . ' rows',
+                            'data' => $inputs,
+                        ];
+                        $this->view('header');
+                        header('HTTP/1.0 201 OK');
+                        echo json_encode($data);
+                    } else {
+                        $data = [
+                            'status' => '400',
+                            'error' => '400',
+                            'message' => 'Invalid update data',
+                            'data' => null,
+                        ];
+                        $this->view('header');
+                        header('HTTP/1.0 400 Bad Request');
+                        echo json_encode($data);
+                    }
+                } catch (S3Exception $e) {
+                    $data = [
+                        'status' => '400',
+                        'error' => '400',
+                        'message' => $e->getMessage(),
+                        'data' => null,
+                    ];
+                    $this->view('header');
+                    header('HTTP/1.0 400 Bad Request');
+                    echo json_encode($data);
+                }
+            } else {
+                $data = [
+                    'status' => '400',
+                    'error' => '400',
+                    'message' => 'Invalid format or image size greater than 5MB',
+                    'data' => null,
+                ];
+                $this->view('header');
+                header('HTTP/1.0 400 Bad Request');
+                echo json_encode($data);
+            }
+        } else {
+            $data = [
+                'status' => '400',
+                'error' => '400',
+                'message' => 'Invalid or missing file information',
+                'data' => $file,
+            ];
+            $this->view('header');
+            header('HTTP/1.0 400 Bad Request');
+            echo json_encode($data);
+        }
+    }
+}
+
+
+
+
 public function delete($id = null){
     if ($this->getToken()) {
-        $inputs = [
-            'status' => '0',
-            'id' => $id
-        ];
         if($id == null){
             $data = [
                 'status' => '404',
@@ -354,13 +461,15 @@ public function delete($id = null){
             echo json_encode($data);
             exit();
         }else{
-            $proc = $this->imageModel->delete($inputs);
+            $proc = $this->imageModel->delete($id);
             if($proc -> rowCount() > 0){
                 $data = [
                     'status' => '201',
                     'error' => null,
                     'message' => 'Success delete data ' . $proc->rowCount() . ' rows',
-                    'data' => null,
+                    'data' => [
+                        'id image' => $id
+                    ],
                 ];
                 $this->view('header');
                 header('HTTP/1.0 201 OK');

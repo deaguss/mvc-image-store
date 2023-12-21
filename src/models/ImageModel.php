@@ -43,9 +43,15 @@ class ImageModel extends Database {
         return $this->insertData($table);   
     }
 
-    public function delete($data){
+    public function delete($id){
+        return $this->deleteData(['image_id' => $id]);
+    }
+
+    public function update($data){
         $table = [
-            'status' => $data["status"]
+            'image_url' => $data['image_url'],
+            'caption'=> $data['caption'],   
+            'image' => $data['image'],
         ];
         $key = [
             'image_id' => $data["id"]

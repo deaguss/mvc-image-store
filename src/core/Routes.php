@@ -13,7 +13,8 @@ class Routes
     $router->get('/image', ['Image', 'index']);
     $router->get('/image/(:id)', ['Image', 'index']);
     $router->post('/image', ['Image', 'insert']);
-    $router->patch('/image/(:id)', ['Image', 'delete']);    
+    // $router->put('/image/(:id)', ['Image', 'update']);
+    $router->delete('/image/(:id)', ['Image', 'delete']);    
 
     $router->post('/register', ['Auth', 'register']);
     $router->post('/login', ['Auth', 'login']);
