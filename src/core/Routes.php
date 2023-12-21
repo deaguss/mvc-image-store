@@ -10,6 +10,9 @@ class Routes
     $router->setDefaultMethod('index');
     $router->setNamespace('App\Controllers');
 
+    $router->get('/image', ['Image', 'index']);
+    $router->post('/image', ['Image', 'insert']);    
+
     $router->post('/register', ['Auth', 'register']);
     $router->post('/login', ['Auth', 'login']);
     $router->get('/refresh', ['Auth', 'refreshToken']);

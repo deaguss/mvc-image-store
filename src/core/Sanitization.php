@@ -19,6 +19,11 @@ class Sanitization {
             'filter' => FILTER_SANITIZE_NUMBER_INT,
             'flags' => FILTER_REQUIRE_ARRAY
         ],
+        'boolean' => FILTER_VALIDATE_BOOLEAN,
+        'boolean[]' => [
+            'filter' => FILTER_VALIDATE_BOOLEAN,
+            'flags' => FILTER_REQUIRE_ARRAY
+        ],
         'float' => [
             'filter' => FILTER_SANITIZE_NUMBER_FLOAT,
             'flags' => FILTER_FLAG_ALLOW_FRACTION
@@ -27,7 +32,7 @@ class Sanitization {
             'filter' => FILTER_SANITIZE_NUMBER_FLOAT,
             'flags' => FILTER_REQUIRE_ARRAY
         ],
-        'url' => FILTER_SANITIZE_URL
+        'url' => FILTER_SANITIZE_URL,
     ];
 
     // Fungsi untuk menghilangkan spasi pada setiap elemen array

@@ -11,6 +11,7 @@ class AuthModel extends Database {
       parent::__construct();
       $this->setTableName('auth');
       $this->setColumn([
+        'id',
         'username',
         'email',
         'password'
