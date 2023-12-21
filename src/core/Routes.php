@@ -11,6 +11,7 @@ class Routes
     $router->setNamespace('App\Controllers');
 
     $router->get('/image', ['Image', 'index']);
+    $router->get('/image/(:id)', ['Image', 'index']);
     $router->post('/image', ['Image', 'insert']);    
 
     $router->post('/register', ['Auth', 'register']);

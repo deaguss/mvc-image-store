@@ -20,10 +20,17 @@ class ImageModel extends Database {
         ]);
     }
 
-    // public function getUserById($id)
-    // {
-    //   return $this->get(['id' => $id])->fetch(PDO::FETCH_ASSOC);
-    // }
+    public function getAll(){
+        $params = array(
+            'status' => '1'
+        );
+        return $this->get($params)->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getById($id)
+    {
+      return $this->get(['image_id' => $id])->fetch(PDO::FETCH_ASSOC);
+    }
     
     public function insert($data){
         $table = [

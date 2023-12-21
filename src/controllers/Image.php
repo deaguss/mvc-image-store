@@ -60,7 +60,59 @@ class Image extends BaseController {
 
     public function index($id = null) {
         if($this->getToken()){
-            var_dump($this->getToken());
+           if($id == null){
+                try {
+                    $data = $this->imageModel->getAll();
+                } catch (\Exception $e) {
+                    $data = [
+                        'status' => '500',
+                        'error' => '500',
+                        'message' => 'Something went wrong',
+                        'data' => null,
+                    ];
+                    $this->view('header');
+                    header('HTTP/1.0 500 Internal Server Error');
+                    echo json_encode($data);
+                    exit();
+                }
+           } else{
+                try {
+                    $data = $this->imageModel->getById($id);
+                } catch (\Exception $e) {
+                    $data = [
+                        'status' => '500',
+                        'error' => '500',
+                        'message' => 'Something went wrong',
+                        'data' => null,
+                    ];
+                    $this->view('header');
+                    header('HTTP/1.0 500 Internal Server Error');
+                    echo json_encode($data);
+                    exit();
+                }
+           }
+
+           if($data){
+                $data = [
+                    'status' => '200',
+                    'error' => 'null',
+                    'message' => 'Success',
+                    'data' => $data
+                ];
+                $this->view('header');
+                header('HTTP/1.0 200 OK');
+                echo json_encode($data);
+           } else {
+            $data = [
+                'status' => '404',
+                'error' => '404',
+                'message' => 'Not Found Data',
+                'data' => null
+              ];
+              $this->view('header');
+              header('HTTP/1.0 404 Not Found');
+              echo json_encode($data);
+           }
         }
     }
 
@@ -191,13 +243,11 @@ class Image extends BaseController {
     public function insert()
 {
     if ($this->getToken()) {
-        // Check if the necessary form fields are set
         if (isset($_POST["caption"]) && isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
             // Get the form fields
             $caption = $_POST["caption"];
             $file = $_FILES['image'];
 
-            // Validate the file type and size
             $allowedFormats = ['image/jpg', 'image/jpeg', 'image/png'];
             $maxSize = 5 * 1024 * 1024;
 
@@ -205,10 +255,9 @@ class Image extends BaseController {
             $ext = strtolower($fileInfo['extension']);
 
             if (in_array($file['type'], $allowedFormats) && $file['size'] <= $maxSize) {
-                // Generate a unique filename
+
                 $encryptedFileName = md5(uniqid()) . '.' . $ext;
 
-                // Upload the image to S3
                 try {
                     $s3 = AwsConfig::get();
                     $result = $s3->putObject([
@@ -228,7 +277,6 @@ class Image extends BaseController {
                         'image' => $encryptedFileName,
                     ];
 
-                    // Insert data into the database
                     $proc = $this->imageModel->insert($inputs);
 
                     if ($proc->rowCount() > 0) {
@@ -275,7 +323,6 @@ class Image extends BaseController {
                 echo json_encode($data);
             }
         } else {
-            // Handle the case when form fields are not set
             $data = [
                 'status' => '400',
                 'error' => '400',
