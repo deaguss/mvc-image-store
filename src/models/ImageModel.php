@@ -42,4 +42,14 @@ class ImageModel extends Database {
         ];
         return $this->insertData($table);   
     }
+
+    public function delete($data){
+        $table = [
+            'status' => $data["status"]
+        ];
+        $key = [
+            'image_id' => $data["id"]
+        ];
+        return $this->updateData($table, $key);
+    }
 }

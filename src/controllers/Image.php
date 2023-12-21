@@ -336,4 +336,50 @@ class Image extends BaseController {
     }
 }
 
+public function delete($id = null){
+    if ($this->getToken()) {
+        $inputs = [
+            'status' => '0',
+            'id' => $id
+        ];
+        if($id == null){
+            $data = [
+                'status' => '404',
+                'error' => '404',
+                'message' => 'Not Found',
+                'data' => null,
+            ];
+            $this->view('header');
+            header('HTTP/1.0 404 Not Found');
+            echo json_encode($data);
+            exit();
+        }else{
+            $proc = $this->imageModel->delete($inputs);
+            if($proc -> rowCount() > 0){
+                $data = [
+                    'status' => '201',
+                    'error' => null,
+                    'message' => 'Success delete data ' . $proc->rowCount() . ' rows',
+                    'data' => null,
+                ];
+                $this->view('header');
+                header('HTTP/1.0 201 OK');
+                echo json_encode($data);
+                exit();
+            }else {
+                $data = [
+                    'status' => '404',
+                    'error' => '404',
+                    'message' => 'Not Found buddy',
+                    'data' => null,
+                ];
+                $this->view('header');
+                header('HTTP/1.0 404 Not Found');
+                echo json_encode($data);
+                exit();
+            }
+        }
+    }
+}
+
 }
